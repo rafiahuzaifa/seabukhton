@@ -1,0 +1,155 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
+import type { Banner } from "@prisma/client";
+
+import { createBannerAction, deleteBannerAction, toggleBannerAction, updateAnnouncementAction, updateHeroAction } from "@/lib/actions/admin/cms";
+import type { HeroContent } from "@/lib/data/cms";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/toast";
+
+const inputClass = "w-full rounded-xl border border-[#dcc7ad] bg-[#faf7f3] px-3.5 py-2.5 text-sm text-[#1b120d] outline-none focus:border-[#c49242]";
+const labelClass = "block text-xs uppercase tracking-[0.1em] text-[#8a7469] mb-1.5";
+
+export function HeroEditor({ hero }: { hero: HeroContent }) {
+  const [form, setForm] = useState({
+    eyebrow: hero.eyebrow,
+    headline: hero.headline,
+    description: hero.description,
+    primaryLabel: hero.primaryCta.label,
+    primaryHref: hero.primaryCta.href,
+    secondaryLabel: hero.secondaryCta.label,
+    secondaryHref: hero.secondaryCta.href,
+    image: hero.image,
+    featuredProductSlug: hero.featuredProductSlug ?? "",
+  });
+  const [pending, startTransition] = useTransition();
+  const { push } = useToast();
+  const router = useRouter();
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    startTransition(async () => {
+      const result = await updateHeroAction(form);
+      if (result.success) {
+        push("Hero section updated", "success");
+        router.refresh();
+      } else {
+        push(result.error ?? "Something went wrong.", "error");
+      }
+    });
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="grid gap-4 rounded-[1.5rem] border border-[#eadac2] bg-white p-6 md:grid-cols-2">
+      <div><label className={labelClass}>Eyebrow</label><input value={form.eyebrow} onChange={(e) => setForm({ ...form, eyebrow: e.target.value })} className={inputClass} /></div>
+      <div><label className={labelClass}>Featured product slug</label><input value={form.featuredProductSlug} onChange={(e) => setForm({ ...form, featuredProductSlug: e.target.value })} className={inputClass} /></div>
+      <div className="md:col-span-2"><label className={labelClass}>Headline</label><input value={form.headline} onChange={(e) => setForm({ ...form, headline: e.target.value })} className={inputClass} /></div>
+      <div className="md:col-span-2"><label className={labelClass}>Description</label><textarea rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={inputClass} /></div>
+      <div><label className={labelClass}>Primary button label</label><input value={form.primaryLabel} onChange={(e) => setForm({ ...form, primaryLabel: e.target.value })} className={inputClass} /></div>
+      <div><label className={labelClass}>Primary button link</label><input value={form.primaryHref} onChange={(e) => setForm({ ...form, primaryHref: e.target.value })} className={inputClass} /></div>
+      <div><label className={labelClass}>Secondary button label</label><input value={form.secondaryLabel} onChange={(e) => setForm({ ...form, secondaryLabel: e.target.value })} className={inputClass} /></div>
+      <div><label className={labelClass}>Secondary button link</label><input value={form.secondaryHref} onChange={(e) => setForm({ ...form, secondaryHref: e.target.value })} className={inputClass} /></div>
+      <div className="md:col-span-2"><label className={labelClass}>Background image URL</label><input value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} className={inputClass} /></div>
+      <div className="md:col-span-2">
+        <Button type="submit" disabled={pending} className="rounded-full px-5 py-2.5 text-[11px] tracking-[0.12em]">
+          {pending ? "Saving…" : "Save hero section"}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+export function AnnouncementEditor({ text, isActive }: { text: string; isActive: boolean }) {
+  const [value, setValue] = useState(text);
+  const [active, setActive] = useState(isActive);
+  const [pending, startTransition] = useTransition();
+  const { push } = useToast();
+  const router = useRouter();
+
+  return (
+    <div className="rounded-[1.5rem] border border-[#eadac2] bg-white p-6">
+      <label className={labelClass}>Announcement bar text</label>
+      <input value={value} onChange={(e) => setValue(e.target.value)} className={inputClass} />
+      <label className="mt-3 flex items-center gap-2 text-sm text-[#4f3e36]">
+        <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} /> Active
+      </label>
+      <Button
+        disabled={pending}
+        onClick={() =>
+          startTransition(async () => {
+            await updateAnnouncementAction(value, active);
+            push("Announcement updated", "success");
+            router.refresh();
+          })
+        }
+        className="mt-3 rounded-full px-5 py-2.5 text-[11px] tracking-[0.12em]"
+      >
+        Save
+      </Button>
+    </div>
+  );
+}
+
+export function BannerManager({ banners }: { banners: Banner[] }) {
+  const [form, setForm] = useState({ title: "", subtitle: "", image: "", link: "" });
+  const [pending, startTransition] = useTransition();
+  const { push } = useToast();
+  const router = useRouter();
+
+  return (
+    <div className="space-y-4">
+      {banners.map((banner) => (
+        <div key={banner.id} className="flex items-center justify-between rounded-[1.25rem] border border-[#eadac2] bg-white px-4 py-3">
+          <div>
+            <p className="font-medium text-[#1b120d]">{banner.title}</p>
+            <p className="text-xs text-[#8a7469]">{banner.subtitle}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              disabled={pending}
+              onClick={() => startTransition(async () => { await toggleBannerAction(banner.id); router.refresh(); })}
+              className={`rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.1em] ${banner.isActive ? "bg-[#eaf3e6] text-[#3e5c37]" : "bg-[#f1ecec] text-[#6a5a55]"}`}
+            >
+              {banner.isActive ? "Active" : "Inactive"}
+            </button>
+            <button
+              disabled={pending}
+              onClick={() => startTransition(async () => { await deleteBannerAction(banner.id); router.refresh(); })}
+              className="rounded-full border border-[#dcc7ad] p-1.5 text-[#a4372e]"
+            >
+              <Trash2 size={13} />
+            </button>
+          </div>
+        </div>
+      ))}
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          startTransition(async () => {
+            const result = await createBannerAction(form);
+            if (result.success) {
+              push("Banner created", "success");
+              setForm({ title: "", subtitle: "", image: "", link: "" });
+              router.refresh();
+            } else {
+              push(result.error ?? "Something went wrong.", "error");
+            }
+          });
+        }}
+        className="grid gap-3 rounded-[1.5rem] border border-[#eadac2] bg-[#faf6f1] p-5 md:grid-cols-2"
+      >
+        <input required placeholder="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className={inputClass} />
+        <input placeholder="Subtitle" value={form.subtitle} onChange={(e) => setForm({ ...form, subtitle: e.target.value })} className={inputClass} />
+        <input required placeholder="Image URL" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} className={inputClass} />
+        <input placeholder="Link (optional)" value={form.link} onChange={(e) => setForm({ ...form, link: e.target.value })} className={inputClass} />
+        <Button type="submit" disabled={pending} className="md:col-span-2 rounded-full px-5 py-2.5 text-[11px] tracking-[0.12em]">
+          Add banner
+        </Button>
+      </form>
+    </div>
+  );
+}

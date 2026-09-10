@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f6f1ea;
+  --foreground: #1b120d;
+  --muted: #72655f;
+  --card: #fbf8f4;
+  --panel: #f0e7dd;
+  --line: rgba(27, 18, 13, 0.12);
+  --gold: #d4aa67;
+  --gold-deep: #b98939;
+  --amber: #d77d3a;
+  --shadow: rgba(46, 32, 19, 0.15);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  line-height: 1.6;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.container {
+  width: min(1200px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+.section-shell {
+  padding: 5rem 0;
+}
+
+.eyebrow {
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: #7a6356;
+}
+
+.gold-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(212, 170, 103, 0.9) 25%, rgba(27, 18, 13, 0.15) 100%);
+}
+
+.panel {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(27, 18, 13, 0.08);
+}
+
+@media (max-width: 640px) {
+  .section-shell {
+    padding: 4rem 0;
+  }
+}
