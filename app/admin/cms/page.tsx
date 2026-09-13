@@ -1,5 +1,5 @@
 import { AnnouncementEditor, BannerManager, HeroEditor, NavigationEditor, StoryEditor } from "@/components/admin/cms-editors";
-import { getAnnouncementBar, getHeroSection, getNavigation, getStoryContent } from "@/lib/data/cms";
+import { getAllNavigationItems, getAnnouncementBar, getHeroSection, getStoryContent } from "@/lib/data/cms";
 import { prisma } from "@/lib/prisma";
 
 export default async function AdminCmsPage() {
@@ -7,7 +7,7 @@ export default async function AdminCmsPage() {
     getHeroSection(),
     prisma.homepageSection.findUnique({ where: { name: "announcement" } }),
     prisma.banner.findMany({ orderBy: { createdAt: "desc" } }),
-    getNavigation(),
+    getAllNavigationItems(),
     getStoryContent(),
   ]);
 

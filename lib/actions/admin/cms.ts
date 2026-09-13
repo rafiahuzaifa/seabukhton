@@ -98,7 +98,7 @@ export async function deleteBannerAction(id: string) {
 }
 
 // ------------------------------------------------------------------- Navigation
-const navItemSchema = z.object({ label: z.string().min(1), href: z.string().min(1) });
+const navItemSchema = z.object({ label: z.string().min(1), href: z.string().min(1), active: z.boolean().default(true) });
 const navSchema = z.object({ items: z.array(navItemSchema).min(1) });
 
 export async function updateNavigationAction(input: { items: NavItem[] }) {

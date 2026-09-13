@@ -198,27 +198,37 @@ export function NavigationEditor({ items: initialItems }: { items: NavItem[] }) 
     <div className="rounded-[1.5rem] border border-[#eadac2] bg-white p-6">
       <p className="text-sm text-[#7a6356]">These links drive the header navigation and mobile menu, in this order.</p>
       <div className="mt-4 space-y-2">
-        {items.map((item, i) => (
-          <div key={i} className="flex items-center gap-2 rounded-xl border border-[#eadac2] bg-[#faf6f1] p-2.5">
-            <input value={item.label} onChange={(e) => update(i, { label: e.target.value })} placeholder="Label" className={`flex-1 ${inputClass}`} />
-            <input value={item.href} onChange={(e) => update(i, { href: e.target.value })} placeholder="/link" className={`flex-1 ${inputClass}`} />
-            <button type="button" disabled={i === 0} onClick={() => move(i, -1)} className="rounded-full border border-[#dcc7ad] p-1.5 text-[#4f3e36] disabled:opacity-30">
-              <ArrowUp size={13} />
-            </button>
-            <button type="button" disabled={i === items.length - 1} onClick={() => move(i, 1)} className="rounded-full border border-[#dcc7ad] p-1.5 text-[#4f3e36] disabled:opacity-30">
-              <ArrowDown size={13} />
-            </button>
-            <button type="button" onClick={() => setItems((prev) => prev.filter((_, idx) => idx !== i))} className="rounded-full border border-[#dcc7ad] p-1.5 text-[#a4372e]">
-              <Trash2 size={13} />
-            </button>
-          </div>
-        ))}
+        {items.map((item, i) => {
+          const active = item.active !== false;
+          return (
+            <div key={i} className={`flex items-center gap-2 rounded-xl border border-[#eadac2] p-2.5 ${active ? "bg-[#faf6f1]" : "bg-[#f1ecec] opacity-70"}`}>
+              <input value={item.label} onChange={(e) => update(i, { label: e.target.value })} placeholder="Label" className={`flex-1 ${inputClass}`} />
+              <input value={item.href} onChange={(e) => update(i, { href: e.target.value })} placeholder="/link" className={`flex-1 ${inputClass}`} />
+              <button
+                type="button"
+                onClick={() => update(i, { active: !active })}
+                className={`rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.1em] ${active ? "bg-[#eaf3e6] text-[#3e5c37]" : "bg-[#f1ecec] text-[#6a5a55]"}`}
+              >
+                {active ? "On" : "Off"}
+              </button>
+              <button type="button" disabled={i === 0} onClick={() => move(i, -1)} className="rounded-full border border-[#dcc7ad] p-1.5 text-[#4f3e36] disabled:opacity-30">
+                <ArrowUp size={13} />
+              </button>
+              <button type="button" disabled={i === items.length - 1} onClick={() => move(i, 1)} className="rounded-full border border-[#dcc7ad] p-1.5 text-[#4f3e36] disabled:opacity-30">
+                <ArrowDown size={13} />
+              </button>
+              <button type="button" onClick={() => setItems((prev) => prev.filter((_, idx) => idx !== i))} className="rounded-full border border-[#dcc7ad] p-1.5 text-[#a4372e]">
+                <Trash2 size={13} />
+              </button>
+            </div>
+          );
+        })}
       </div>
       <div className="mt-4 flex flex-wrap gap-3">
         <Button
           type="button"
           variant="outline"
-          onClick={() => setItems((prev) => [...prev, { label: "New link", href: "/" }])}
+          onClick={() => setItems((prev) => [...prev, { label: "New link", href: "/", active: true }])}
           className="gap-2 rounded-full px-4 py-2.5 text-[10px] tracking-[0.1em]"
         >
           <Plus size={13} /> Add link

@@ -45,24 +45,31 @@ export async function getSiteFaqs() {
   return prisma.fAQ.findMany({ where: { productId: null }, orderBy: { createdAt: "asc" } });
 }
 
-export type NavItem = { label: string; href: string };
+export type NavItem = { label: string; href: string; active?: boolean };
 
 const defaultNavItems: NavItem[] = [
-  { label: "Shop", href: "/shop" },
-  { label: "Skincare", href: "/shop?category=skincare" },
-  { label: "Wellness", href: "/shop?category=wellness" },
-  { label: "Haircare", href: "/shop?category=haircare" },
-  { label: "Oils", href: "/shop?category=oils" },
-  { label: "Bundles", href: "/shop?category=bundles" },
-  { label: "Our Story", href: "/story" },
-  { label: "Journal", href: "/journal" },
+  { label: "Shop", href: "/shop", active: true },
+  { label: "Skincare", href: "/shop?category=skincare", active: true },
+  { label: "Wellness", href: "/shop?category=wellness", active: true },
+  { label: "Haircare", href: "/shop?category=haircare", active: true },
+  { label: "Oils", href: "/shop?category=oils", active: true },
+  { label: "Bundles", href: "/shop?category=bundles", active: true },
+  { label: "Our Story", href: "/story", active: true },
+  { label: "Journal", href: "/journal", active: true },
 ];
 
-export async function getNavigation(): Promise<NavItem[]> {
+/** All nav items, active and inactive — for the admin editor. */
+export async function getAllNavigationItems(): Promise<NavItem[]> {
   const section = await prisma.homepageSection.findUnique({ where: { name: "navigation" } });
   if (!section || !section.isActive) return defaultNavItems;
   const items = (section.content as { items?: NavItem[] })?.items;
   return items && items.length ? items : defaultNavItems;
+}
+
+/** Only active nav items — for rendering the header. */
+export async function getNavigation(): Promise<NavItem[]> {
+  const items = await getAllNavigationItems();
+  return items.filter((item) => item.active !== false);
 }
 
 export type StoryContent = {
