@@ -5,18 +5,9 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
-const navItems = [
-  { label: "Shop", href: "/shop" },
-  { label: "Skincare", href: "/shop?category=skincare" },
-  { label: "Wellness", href: "/shop?category=wellness" },
-  { label: "Haircare", href: "/shop?category=haircare" },
-  { label: "Oils", href: "/shop?category=oils" },
-  { label: "Bundles", href: "/shop?category=bundles" },
-  { label: "Our Story", href: "/story" },
-  { label: "Journal", href: "/journal" },
-];
+import type { NavItem } from "@/lib/data/cms";
 
-export function HeaderMobileMenu() {
+export function HeaderMobileMenu({ items }: { items: NavItem[] }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -53,7 +44,7 @@ export function HeaderMobileMenu() {
                 </button>
               </div>
               <nav className="mt-10 flex flex-col gap-1">
-                {navItems.map((item) => (
+                {items.map((item) => (
                   <Link
                     key={item.label}
                     href={item.href}

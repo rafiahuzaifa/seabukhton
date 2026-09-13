@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { requireStaff } from "@/lib/admin-guard";
 import { prisma } from "@/lib/prisma";
-import type { HeroContent } from "@/lib/data/cms";
+import type { HeroContent, NavItem, StoryContent } from "@/lib/data/cms";
 
 const heroSchema = z.object({
   eyebrow: z.string().min(1),
@@ -93,6 +93,54 @@ export async function deleteBannerAction(id: string) {
   if (!session) return { success: false, error: "Not authorized." };
 
   await prisma.banner.delete({ where: { id } });
+  revalidatePath("/admin/cms");
+  return { success: true };
+}
+
+// ------------------------------------------------------------------- Navigation
+const navItemSchema = z.object({ label: z.string().min(1), href: z.string().min(1) });
+const navSchema = z.object({ items: z.array(navItemSchema).min(1) });
+
+export async function updateNavigationAction(input: { items: NavItem[] }) {
+  const session = await requireStaff();
+  if (!session) return { success: false, error: "Not authorized." };
+
+  const parsed = navSchema.safeParse(input);
+  if (!parsed.success) return { success: false, error: "Every nav item needs a label and a link." };
+
+  await prisma.homepageSection.upsert({
+    where: { name: "navigation" },
+    update: { content: parsed.data, isActive: true },
+    create: { name: "navigation", type: "navigation", content: parsed.data, isActive: true },
+  });
+
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/cms");
+  return { success: true };
+}
+
+// ----------------------------------------------------------------------- Story
+const storySchema = z.object({
+  eyebrow: z.string().min(1),
+  headline: z.string().min(1),
+  paragraphs: z.array(z.string().min(1)).min(1),
+  image: z.string().url(),
+});
+
+export async function updateStoryAction(input: StoryContent) {
+  const session = await requireStaff();
+  if (!session) return { success: false, error: "Not authorized." };
+
+  const parsed = storySchema.safeParse(input);
+  if (!parsed.success) return { success: false, error: "Please complete all story fields." };
+
+  await prisma.homepageSection.upsert({
+    where: { name: "story" },
+    update: { content: parsed.data, isActive: true },
+    create: { name: "story", type: "story", content: parsed.data, isActive: true },
+  });
+
+  revalidatePath("/story");
   revalidatePath("/admin/cms");
   return { success: true };
 }

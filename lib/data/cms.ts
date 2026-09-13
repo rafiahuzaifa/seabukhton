@@ -44,3 +44,46 @@ export async function getCategoryBySlug(slug: string) {
 export async function getSiteFaqs() {
   return prisma.fAQ.findMany({ where: { productId: null }, orderBy: { createdAt: "asc" } });
 }
+
+export type NavItem = { label: string; href: string };
+
+const defaultNavItems: NavItem[] = [
+  { label: "Shop", href: "/shop" },
+  { label: "Skincare", href: "/shop?category=skincare" },
+  { label: "Wellness", href: "/shop?category=wellness" },
+  { label: "Haircare", href: "/shop?category=haircare" },
+  { label: "Oils", href: "/shop?category=oils" },
+  { label: "Bundles", href: "/shop?category=bundles" },
+  { label: "Our Story", href: "/story" },
+  { label: "Journal", href: "/journal" },
+];
+
+export async function getNavigation(): Promise<NavItem[]> {
+  const section = await prisma.homepageSection.findUnique({ where: { name: "navigation" } });
+  if (!section || !section.isActive) return defaultNavItems;
+  const items = (section.content as { items?: NavItem[] })?.items;
+  return items && items.length ? items : defaultNavItems;
+}
+
+export type StoryContent = {
+  eyebrow: string;
+  headline: string;
+  paragraphs: string[];
+  image: string;
+};
+
+const defaultStory: StoryContent = {
+  eyebrow: "Our story",
+  headline: "Rooted in the Himalayas",
+  paragraphs: [
+    "BERRIVA brings together the richness of sea buckthorn and the calm discipline of modern botanical skincare.",
+    "We work with nature-inspired formulations that respect the power of the berry while creating elevated routines for skin, body, and daily wellness.",
+  ],
+  image: "https://images.unsplash.com/photo-1471193945509-9ad0617afabf?auto=format&fit=crop&w=1200&q=80",
+};
+
+export async function getStoryContent(): Promise<StoryContent> {
+  const section = await prisma.homepageSection.findUnique({ where: { name: "story" } });
+  if (!section || !section.isActive) return defaultStory;
+  return { ...defaultStory, ...(section.content as Partial<StoryContent>) };
+}

@@ -7,25 +7,15 @@ import { HeaderSearch } from "@/components/header-search";
 import { HeaderMobileMenu } from "@/components/header-mobile-menu";
 import { authOptions } from "@/lib/auth";
 import { cartSummary } from "@/lib/cart";
-import { getAnnouncementBar } from "@/lib/data/cms";
+import { getAnnouncementBar, getNavigation } from "@/lib/data/cms";
 import { prisma } from "@/lib/prisma";
 
-const navItems = [
-  { label: "Shop", href: "/shop" },
-  { label: "Skincare", href: "/shop?category=skincare" },
-  { label: "Wellness", href: "/shop?category=wellness" },
-  { label: "Haircare", href: "/shop?category=haircare" },
-  { label: "Oils", href: "/shop?category=oils" },
-  { label: "Bundles", href: "/shop?category=bundles" },
-  { label: "Our Story", href: "/story" },
-  { label: "Journal", href: "/journal" },
-];
-
 export async function Header() {
-  const [session, { itemCount }, announcement] = await Promise.all([
+  const [session, { itemCount }, announcement, navItems] = await Promise.all([
     getServerSession(authOptions),
     cartSummary(),
     getAnnouncementBar(),
+    getNavigation(),
   ]);
 
   const wishlistCount = session?.user?.id
@@ -94,7 +84,7 @@ export async function Header() {
             </Link>
           </Button>
 
-          <HeaderMobileMenu />
+          <HeaderMobileMenu items={navItems} />
         </div>
       </div>
     </header>

@@ -2,11 +2,19 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import type { Banner } from "@prisma/client";
 
-import { createBannerAction, deleteBannerAction, toggleBannerAction, updateAnnouncementAction, updateHeroAction } from "@/lib/actions/admin/cms";
-import type { HeroContent } from "@/lib/data/cms";
+import {
+  createBannerAction,
+  deleteBannerAction,
+  toggleBannerAction,
+  updateAnnouncementAction,
+  updateHeroAction,
+  updateNavigationAction,
+  updateStoryAction,
+} from "@/lib/actions/admin/cms";
+import type { HeroContent, NavItem, StoryContent } from "@/lib/data/cms";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/toast";
 
@@ -151,5 +159,117 @@ export function BannerManager({ banners }: { banners: Banner[] }) {
         </Button>
       </form>
     </div>
+  );
+}
+
+export function NavigationEditor({ items: initialItems }: { items: NavItem[] }) {
+  const [items, setItems] = useState<NavItem[]>(initialItems);
+  const [pending, startTransition] = useTransition();
+  const { push } = useToast();
+  const router = useRouter();
+
+  function update(index: number, patch: Partial<NavItem>) {
+    setItems((prev) => prev.map((item, i) => (i === index ? { ...item, ...patch } : item)));
+  }
+
+  function move(index: number, direction: -1 | 1) {
+    setItems((prev) => {
+      const next = [...prev];
+      const target = index + direction;
+      if (target < 0 || target >= next.length) return prev;
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    });
+  }
+
+  function handleSave() {
+    startTransition(async () => {
+      const result = await updateNavigationAction({ items });
+      if (result.success) {
+        push("Navigation updated", "success");
+        router.refresh();
+      } else {
+        push(result.error ?? "Something went wrong.", "error");
+      }
+    });
+  }
+
+  return (
+    <div className="rounded-[1.5rem] border border-[#eadac2] bg-white p-6">
+      <p className="text-sm text-[#7a6356]">These links drive the header navigation and mobile menu, in this order.</p>
+      <div className="mt-4 space-y-2">
+        {items.map((item, i) => (
+          <div key={i} className="flex items-center gap-2 rounded-xl border border-[#eadac2] bg-[#faf6f1] p-2.5">
+            <input value={item.label} onChange={(e) => update(i, { label: e.target.value })} placeholder="Label" className={`flex-1 ${inputClass}`} />
+            <input value={item.href} onChange={(e) => update(i, { href: e.target.value })} placeholder="/link" className={`flex-1 ${inputClass}`} />
+            <button type="button" disabled={i === 0} onClick={() => move(i, -1)} className="rounded-full border border-[#dcc7ad] p-1.5 text-[#4f3e36] disabled:opacity-30">
+              <ArrowUp size={13} />
+            </button>
+            <button type="button" disabled={i === items.length - 1} onClick={() => move(i, 1)} className="rounded-full border border-[#dcc7ad] p-1.5 text-[#4f3e36] disabled:opacity-30">
+              <ArrowDown size={13} />
+            </button>
+            <button type="button" onClick={() => setItems((prev) => prev.filter((_, idx) => idx !== i))} className="rounded-full border border-[#dcc7ad] p-1.5 text-[#a4372e]">
+              <Trash2 size={13} />
+            </button>
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 flex flex-wrap gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setItems((prev) => [...prev, { label: "New link", href: "/" }])}
+          className="gap-2 rounded-full px-4 py-2.5 text-[10px] tracking-[0.1em]"
+        >
+          <Plus size={13} /> Add link
+        </Button>
+        <Button type="button" disabled={pending} onClick={handleSave} className="rounded-full px-5 py-2.5 text-[11px] tracking-[0.12em]">
+          {pending ? "Saving…" : "Save navigation"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+export function StoryEditor({ story }: { story: StoryContent }) {
+  const [form, setForm] = useState({
+    eyebrow: story.eyebrow,
+    headline: story.headline,
+    image: story.image,
+    paragraphsText: story.paragraphs.join("\n\n"),
+  });
+  const [pending, startTransition] = useTransition();
+  const { push } = useToast();
+  const router = useRouter();
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const paragraphs = form.paragraphsText.split("\n\n").map((p) => p.trim()).filter(Boolean);
+    startTransition(async () => {
+      const result = await updateStoryAction({ eyebrow: form.eyebrow, headline: form.headline, image: form.image, paragraphs });
+      if (result.success) {
+        push("Our Story page updated", "success");
+        router.refresh();
+      } else {
+        push(result.error ?? "Something went wrong.", "error");
+      }
+    });
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="grid gap-4 rounded-[1.5rem] border border-[#eadac2] bg-white p-6 md:grid-cols-2">
+      <div><label className={labelClass}>Eyebrow</label><input value={form.eyebrow} onChange={(e) => setForm({ ...form, eyebrow: e.target.value })} className={inputClass} /></div>
+      <div><label className={labelClass}>Headline</label><input value={form.headline} onChange={(e) => setForm({ ...form, headline: e.target.value })} className={inputClass} /></div>
+      <div className="md:col-span-2"><label className={labelClass}>Image URL</label><input value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} className={inputClass} /></div>
+      <div className="md:col-span-2">
+        <label className={labelClass}>Paragraphs (blank line between each)</label>
+        <textarea rows={6} value={form.paragraphsText} onChange={(e) => setForm({ ...form, paragraphsText: e.target.value })} className={inputClass} />
+      </div>
+      <div className="md:col-span-2">
+        <Button type="submit" disabled={pending} className="rounded-full px-5 py-2.5 text-[11px] tracking-[0.12em]">
+          {pending ? "Saving…" : "Save Our Story page"}
+        </Button>
+      </div>
+    </form>
   );
 }
