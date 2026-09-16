@@ -21,7 +21,7 @@ export function HeaderSearch() {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem("berriva_search_history");
+      const stored = localStorage.getItem("herbova_search_history");
       if (stored) setHistory(JSON.parse(stored));
     } catch {
       // ignore
@@ -60,7 +60,7 @@ export function HeaderSearch() {
     const next = [term, ...history.filter((h) => h !== term)].slice(0, 6);
     setHistory(next);
     try {
-      localStorage.setItem("berriva_search_history", JSON.stringify(next));
+      localStorage.setItem("herbova_search_history", JSON.stringify(next));
     } catch {
       // ignore
     }

@@ -18,12 +18,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXTAUTH_URL ?? "http://localhost:3000"),
   title: {
-    default: "BERRIVA | The Golden Berry of Wellness",
-    template: "%s | BERRIVA",
+    default: "HERBOVA | The Golden Berry of Wellness",
+    template: "%s | HERBOVA",
   },
   description: "Premium Sea Buckthorn wellness, skincare, haircare, and beauty products crafted for modern rituals.",
   openGraph: {
-    siteName: "BERRIVA",
+    siteName: "HERBOVA",
     type: "website",
   },
 };

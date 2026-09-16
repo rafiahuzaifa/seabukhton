@@ -21,7 +21,7 @@ export default async function CheckoutPage() {
 
   if (cart.items.length === 0) redirect("/cart");
 
-  const appliedCode = cookieStore.get("berriva_coupon")?.value ?? null;
+  const appliedCode = cookieStore.get("herbova_coupon")?.value ?? null;
   const couponResult = appliedCode ? await validateCoupon(appliedCode, subtotal, session?.user?.id) : null;
   const discount = couponResult?.valid ? couponResult.discount : 0;
   const shipping = subtotal >= settings.freeShippingThreshold ? 0 : settings.flatShippingRate;

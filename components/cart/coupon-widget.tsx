@@ -27,7 +27,7 @@ export function CouponWidget({
       const res = await fetch(`/api/coupon?code=${encodeURIComponent(code)}&subtotal=${subtotal}`);
       const data = await res.json();
       if (data.valid) {
-        document.cookie = `berriva_coupon=${data.code}; path=/; max-age=${60 * 60 * 24 * 7}`;
+        document.cookie = `herbova_coupon=${data.code}; path=/; max-age=${60 * 60 * 24 * 7}`;
         push(`Coupon applied: -${formatPrice(data.discount, currencySymbol)}`, "success");
         router.refresh();
       } else {
@@ -37,7 +37,7 @@ export function CouponWidget({
   }
 
   function remove() {
-    document.cookie = "berriva_coupon=; path=/; max-age=0";
+    document.cookie = "herbova_coupon=; path=/; max-age=0";
     setCode("");
     push("Coupon removed", "success");
     router.refresh();

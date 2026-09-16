@@ -74,7 +74,7 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
         </div>
 
         <p className="mt-6 rounded-2xl bg-[#faf6f1] px-4 py-3 text-xs text-[#7a6356]">
-          Demo: <span className="font-medium">customer@berriva.com</span> / Customer@123
+          Demo: <span className="font-medium">customer@herbova.com</span> / Customer@123
         </p>
       </div>
     </main>

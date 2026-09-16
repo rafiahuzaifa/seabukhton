@@ -7,7 +7,7 @@ import type { Prisma } from "@prisma/client";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-const CART_COOKIE = "berriva_cart_id";
+const CART_COOKIE = "herbova_cart_id";
 
 const cartInclude = {
   items: {

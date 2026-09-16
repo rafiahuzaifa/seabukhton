@@ -7,7 +7,7 @@ import { getPublishedPosts } from "@/lib/data/blog";
 
 export const metadata: Metadata = {
   title: "Journal",
-  description: "Botanical stories, skincare guidance and sea buckthorn wisdom from BERRIVA.",
+  description: "Botanical stories, skincare guidance and sea buckthorn wisdom from HERBOVA.",
 };
 
 export default async function JournalPage() {

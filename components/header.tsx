@@ -32,7 +32,7 @@ export async function Header() {
       <div className="container flex items-center justify-between py-4">
         <div className="flex items-center gap-8">
           <Link href="/" className="text-2xl font-semibold tracking-[0.24em] text-[#1b120d]">
-            BERRIVA
+            HERBOVA
           </Link>
           <nav className="hidden items-center gap-6 lg:flex">
             {navItems.map((item) => (

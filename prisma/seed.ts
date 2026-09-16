@@ -26,17 +26,17 @@ const IMAGES = {
 };
 
 async function main() {
-  console.log("Seeding BERRIVA...");
+  console.log("Seeding HERBOVA...");
 
   // --- Users -----------------------------------------------------------
-  const adminEmail = process.env.ADMIN_EMAIL ?? "admin@berriva.com";
-  const adminPassword = process.env.ADMIN_PASSWORD ?? "Berriva@Admin123";
+  const adminEmail = process.env.ADMIN_EMAIL ?? "admin@herbova.com";
+  const adminPassword = process.env.ADMIN_PASSWORD ?? "Herbova@Admin123";
 
   const admin = await prisma.user.upsert({
     where: { email: adminEmail },
     update: {},
     create: {
-      name: "Berriva Admin",
+      name: "Herbova Admin",
       email: adminEmail,
       passwordHash: await bcrypt.hash(adminPassword, 12),
       role: "ADMIN",
@@ -45,11 +45,11 @@ async function main() {
   });
 
   await prisma.user.upsert({
-    where: { email: "staff@berriva.com" },
+    where: { email: "staff@herbova.com" },
     update: {},
     create: {
-      name: "Berriva Staff",
-      email: "staff@berriva.com",
+      name: "Herbova Staff",
+      email: "staff@herbova.com",
       passwordHash: await bcrypt.hash("Staff@12345", 12),
       role: "STAFF",
       emailVerified: new Date(),
@@ -57,11 +57,11 @@ async function main() {
   });
 
   const customer = await prisma.user.upsert({
-    where: { email: "customer@berriva.com" },
+    where: { email: "customer@herbova.com" },
     update: {},
     create: {
       name: "Amara Khan",
-      email: "customer@berriva.com",
+      email: "customer@herbova.com",
       passwordHash: await bcrypt.hash("Customer@123", 12),
       role: "CUSTOMER",
       emailVerified: new Date(),
@@ -85,7 +85,7 @@ async function main() {
   // --- Collections ---------------------------------------------------
   const collectionDefs = [
     { name: "Bestsellers", slug: "bestsellers", description: "Our most-loved rituals, chosen by the community.", image: IMAGES.oilBottle },
-    { name: "New Arrivals", slug: "new-arrivals", description: "Freshly formulated additions to the BERRIVA line.", image: IMAGES.serumDropper },
+    { name: "New Arrivals", slug: "new-arrivals", description: "Freshly formulated additions to the HERBOVA line.", image: IMAGES.serumDropper },
     { name: "Himalayan Origins", slug: "himalayan-origins", description: "Sourced from the high-altitude sea buckthorn groves of the Himalayas.", image: IMAGES.himalaya },
   ];
   const collections: Record<string, Awaited<ReturnType<typeof prisma.collection.upsert>>> = {};
@@ -378,11 +378,11 @@ async function main() {
     {
       name: "Himalayan Essentials", slug: "himalayan-essentials-bundle", categorySlug: "bundles", collectionSlug: "himalayan-origins",
       shortDescription: "A signature edit of our most iconic Himalayan formulas.",
-      description: "The definitive BERRIVA introduction — Pure Sea Buckthorn Oil, Powder and Face Wash in one giftable edit.",
+      description: "The definitive HERBOVA introduction — Pure Sea Buckthorn Oil, Powder and Face Wash in one giftable edit.",
       price: 5600, sku: "BND-HIM", stock: 15, images: [IMAGES.himalaya, IMAGES.bundle],
       productType: "Bundle", benefit: "Nourishment", format: "3-piece edit",
       ingredientNotes: "Includes Pure Sea Buckthorn Oil, Sea Buckthorn Powder and Face Wash.",
-      usageInstructions: "A complete introduction to the BERRIVA ritual.",
+      usageInstructions: "A complete introduction to the HERBOVA ritual.",
       rating: 4.8, reviewCount: 26,
       ingredientSlugs: ["omega-7", "carotenoids"],
     },
@@ -410,19 +410,19 @@ async function main() {
     },
     {
       name: "Starter Kit", slug: "starter-kit-bundle", categorySlug: "bundles",
-      shortDescription: "A gentle first introduction to BERRIVA essentials.",
+      shortDescription: "A gentle first introduction to HERBOVA essentials.",
       description: "Travel-friendly sizes of our best-loved Face Wash, Serum and Oil — perfect for a first ritual.",
       price: 3400, sku: "BND-START", stock: 30, images: [IMAGES.bundle, IMAGES.faceWash],
       productType: "Bundle", benefit: "Glow", format: "Travel sizes", isNew: true,
       ingredientNotes: "Includes travel sizes of Face Wash, Radiance Serum and Berry Oil.",
-      usageInstructions: "A gentle way to trial the full BERRIVA ritual.",
+      usageInstructions: "A gentle way to trial the full HERBOVA ritual.",
       rating: 4.6, reviewCount: 12,
       ingredientSlugs: ["vitamin-e"],
     },
     {
       name: "Gift Box", slug: "gift-box-bundle", categorySlug: "bundles",
       shortDescription: "A beautifully boxed edit, ready to gift.",
-      description: "Our most giftable edit, presented in signature BERRIVA packaging — ideal for any wellness-minded occasion.",
+      description: "Our most giftable edit, presented in signature HERBOVA packaging — ideal for any wellness-minded occasion.",
       price: 7200, sku: "BND-GIFT", stock: 12, images: [IMAGES.bundle, IMAGES.spa],
       productType: "Bundle", benefit: "Nourishment", format: "Gift edition",
       ingredientNotes: "Includes Radiance Serum, Pure Sea Buckthorn Oil, Body Butter and Lip Balm.",
@@ -446,7 +446,7 @@ async function main() {
         slug: p.slug,
         shortDescription: p.shortDescription,
         description: p.description,
-        seoTitle: `${p.name} | BERRIVA`,
+        seoTitle: `${p.name} | HERBOVA`,
         seoDescription: p.shortDescription,
         featuredImage: p.images[0],
         categoryId: category.id,
@@ -518,12 +518,12 @@ async function main() {
   });
 
   const posts = [
-    { title: "What Is Sea Buckthorn?", slug: "what-is-sea-buckthorn", excerpt: "Learn about this vibrant Himalayan berry and why it has become a staple in modern wellness rituals.", image: IMAGES.berries, content: "Sea buckthorn is a hardy, thorned shrub native to high-altitude regions across Asia and Europe, prized for its small, vivid orange berries. For centuries it has held a place in traditional wellness practices across the Himalayan region, valued for its distinctive botanical profile and resilience in harsh mountain climates.\n\nToday, sea buckthorn is recognized in modern clean beauty and wellness for its naturally occurring oils, carotenoids and flavonoids. At BERRIVA, we work directly with growers in the Himalayas to bring this golden berry into thoughtfully formulated skincare, haircare and wellness products." },
+    { title: "What Is Sea Buckthorn?", slug: "what-is-sea-buckthorn", excerpt: "Learn about this vibrant Himalayan berry and why it has become a staple in modern wellness rituals.", image: IMAGES.berries, content: "Sea buckthorn is a hardy, thorned shrub native to high-altitude regions across Asia and Europe, prized for its small, vivid orange berries. For centuries it has held a place in traditional wellness practices across the Himalayan region, valued for its distinctive botanical profile and resilience in harsh mountain climates.\n\nToday, sea buckthorn is recognized in modern clean beauty and wellness for its naturally occurring oils, carotenoids and flavonoids. At HERBOVA, we work directly with growers in the Himalayas to bring this golden berry into thoughtfully formulated skincare, haircare and wellness products." },
     { title: "Sea Buckthorn Oil vs Seed Oil", slug: "sea-buckthorn-oil-vs-seed-oil", excerpt: "An easy guide to understanding the difference between berry oil and seed oil in beauty routines.", image: IMAGES.oilBottle, content: "Sea buckthorn produces two distinct oils, each pressed from a different part of the berry. Berry oil is extracted from the fleshy pulp and carries the plant's signature deep orange hue, while seed oil is pressed from the small seeds inside and tends to be lighter in both texture and color.\n\nBerry oil is often chosen for richer, more nourishing formulations, while seed oil's lighter profile makes it a popular choice for fast-absorbing daily use. Both share the same botanical origin, simply offering a different sensorial experience." },
     { title: "How to Use Sea Buckthorn Powder", slug: "how-to-use-sea-buckthorn-powder", excerpt: "Simple ways to integrate this nutrient-rich ingredient into your everyday and wellness routine.", image: IMAGES.powder, content: "Sea buckthorn powder is one of the most versatile ways to bring this berry into your daily routine. Its naturally tart, fruity flavor blends easily into smoothies, water, oats or your favorite recipes.\n\nMany of our customers stir a teaspoon into their morning routine as a simple, consistent ritual. Because it's a whole, milled ingredient, there's no need to overthink it — a little goes a long way." },
     { title: "Sea Buckthorn Skincare Routine", slug: "sea-buckthorn-skincare-routine", excerpt: "A simple, four-step ritual built around cleanse, treat, hydrate and nourish.", image: IMAGES.faceWash, content: "Building a consistent skincare ritual doesn't need to be complicated. We recommend a simple four-step approach: cleanse to remove the day, treat with a targeted serum, hydrate to replenish moisture, and nourish to seal it all in.\n\nEach step can be built around sea buckthorn-based formulas suited to your skin's needs, creating a routine that feels intentional without being overwhelming." },
-    { title: "Natural Beauty and Botanical Ingredients", slug: "natural-beauty-and-botanical-ingredients", excerpt: "A closer look at why botanical, naturally-inspired formulation matters in modern beauty.", image: IMAGES.botanicals, content: "Clean, botanical beauty is about more than a trend — it's a return to thoughtfully sourced ingredients with a clear provenance. Naturally-inspired formulation asks a simple question: what does this ingredient actually do, and where does it come from?\n\nAt BERRIVA, every formula starts with the sea buckthorn berry itself, supported by complementary botanicals chosen for how they work together, not just how they sound on a label." },
-    { title: "From Himalayan Berry to Modern Wellness", slug: "from-himalayan-berry-to-modern-wellness", excerpt: "Tracing the journey of sea buckthorn from mountain harvest to your daily ritual.", image: IMAGES.himalaya, content: "Every BERRIVA product begins its journey high in the Himalayas, where sea buckthorn grows wild in harsh, high-altitude conditions. From harvest to selection, processing, formulation, packaging and delivery, we've built a supply chain that respects both the berry and the communities who grow it.\n\nThe result is a modern wellness and beauty line rooted in a genuinely traditional ingredient." },
+    { title: "Natural Beauty and Botanical Ingredients", slug: "natural-beauty-and-botanical-ingredients", excerpt: "A closer look at why botanical, naturally-inspired formulation matters in modern beauty.", image: IMAGES.botanicals, content: "Clean, botanical beauty is about more than a trend — it's a return to thoughtfully sourced ingredients with a clear provenance. Naturally-inspired formulation asks a simple question: what does this ingredient actually do, and where does it come from?\n\nAt HERBOVA, every formula starts with the sea buckthorn berry itself, supported by complementary botanicals chosen for how they work together, not just how they sound on a label." },
+    { title: "From Himalayan Berry to Modern Wellness", slug: "from-himalayan-berry-to-modern-wellness", excerpt: "Tracing the journey of sea buckthorn from mountain harvest to your daily ritual.", image: IMAGES.himalaya, content: "Every HERBOVA product begins its journey high in the Himalayas, where sea buckthorn grows wild in harsh, high-altitude conditions. From harvest to selection, processing, formulation, packaging and delivery, we've built a supply chain that respects both the berry and the communities who grow it.\n\nThe result is a modern wellness and beauty line rooted in a genuinely traditional ingredient." },
   ];
 
   for (const post of posts) {
@@ -538,8 +538,8 @@ async function main() {
         featureImage: post.image,
         categoryId: blogCategory.id,
         published: true,
-        authorName: "The BERRIVA Team",
-        seoTitle: `${post.title} | BERRIVA Journal`,
+        authorName: "The HERBOVA Team",
+        seoTitle: `${post.title} | HERBOVA Journal`,
         seoDescription: post.excerpt,
       },
     });
@@ -629,12 +629,12 @@ async function main() {
 
   // --- Site settings -------------------------------------------------
   const settings: Record<string, string> = {
-    site_name: "BERRIVA",
+    site_name: "HERBOVA",
     site_tagline: "The Golden Berry of Wellness",
     currency_symbol: "Rs.",
     free_shipping_threshold: "5000",
     flat_shipping_rate: "250",
-    contact_email: "hello@berriva.com",
+    contact_email: "hello@herbova.com",
     contact_phone: "+92 300 0000000",
   };
   for (const [key, value] of Object.entries(settings)) {
@@ -671,7 +671,7 @@ async function main() {
 
     const order = await prisma.order.create({
       data: {
-        orderNumber: "BRV-10001",
+        orderNumber: "HRB-10001",
         userId: customer.id,
         addressId: address.id,
         status: "DELIVERED",
@@ -680,7 +680,7 @@ async function main() {
         shipping,
         total,
         paymentMethod: "CASH_ON_DELIVERY",
-        trackingCode: "TRK-BRV10001",
+        trackingCode: "TRK-HRB10001",
         items: {
           create: [
             { productId: oil.id, quantity: 1, price: oil.salePrice ?? oil.price },
@@ -697,8 +697,8 @@ async function main() {
     await prisma.shipment.create({
       data: {
         orderId: order.id,
-        carrier: "BERRIVA Logistics",
-        trackingNo: "TRK-BRV10001",
+        carrier: "HERBOVA Logistics",
+        trackingNo: "TRK-HRB10001",
         status: "DELIVERED",
         shippedAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
         deliveredAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
@@ -708,7 +708,7 @@ async function main() {
 
   console.log("Seed complete.");
   console.log(`Admin login: ${adminEmail} / ${adminPassword}`);
-  console.log("Customer login: customer@berriva.com / Customer@123");
+  console.log("Customer login: customer@herbova.com / Customer@123");
 }
 
 main()

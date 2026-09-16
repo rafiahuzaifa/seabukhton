@@ -19,7 +19,7 @@ export async function sendMail({ to, subject, html }: MailPayload) {
       Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ from: process.env.MAILER_FROM ?? "hello@berriva.com", to, subject, html }),
+    body: JSON.stringify({ from: process.env.MAILER_FROM ?? "hello@herbova.com", to, subject, html }),
   });
 
   return { delivered: res.ok, dev: false };
@@ -27,31 +27,31 @@ export async function sendMail({ to, subject, html }: MailPayload) {
 
 export const emailTemplates = {
   welcome: (name: string) => ({
-    subject: "Welcome to BERRIVA",
-    html: `<p>Hi ${name},</p><p>Welcome to BERRIVA — The Golden Berry of Wellness. We're glad you're here.</p>`,
+    subject: "Welcome to HERBOVA",
+    html: `<p>Hi ${name},</p><p>Welcome to HERBOVA — The Golden Berry of Wellness. We're glad you're here.</p>`,
   }),
   verifyEmail: (link: string) => ({
-    subject: "Verify your BERRIVA account",
+    subject: "Verify your HERBOVA account",
     html: `<p>Please verify your email address by visiting the link below:</p><p><a href="${link}">${link}</a></p>`,
   }),
   passwordReset: (link: string) => ({
-    subject: "Reset your BERRIVA password",
+    subject: "Reset your HERBOVA password",
     html: `<p>You requested a password reset. Visit the link below to choose a new password (valid for 1 hour):</p><p><a href="${link}">${link}</a></p>`,
   }),
   orderConfirmation: (orderNumber: string) => ({
-    subject: `Your BERRIVA order ${orderNumber} is confirmed`,
+    subject: `Your HERBOVA order ${orderNumber} is confirmed`,
     html: `<p>Thank you for your order! We've received order ${orderNumber} and will begin preparing it shortly.</p>`,
   }),
   orderShipped: (orderNumber: string, trackingCode?: string | null) => ({
-    subject: `Your BERRIVA order ${orderNumber} has shipped`,
+    subject: `Your HERBOVA order ${orderNumber} has shipped`,
     html: `<p>Your order ${orderNumber} is on its way.${trackingCode ? ` Tracking code: ${trackingCode}.` : ""}</p>`,
   }),
   orderDelivered: (orderNumber: string) => ({
-    subject: `Your BERRIVA order ${orderNumber} has been delivered`,
+    subject: `Your HERBOVA order ${orderNumber} has been delivered`,
     html: `<p>Your order ${orderNumber} has been delivered. We hope you love it.</p>`,
   }),
   orderCancelled: (orderNumber: string) => ({
-    subject: `Your BERRIVA order ${orderNumber} was cancelled`,
+    subject: `Your HERBOVA order ${orderNumber} was cancelled`,
     html: `<p>Your order ${orderNumber} has been cancelled. If this is unexpected, please contact us.</p>`,
   }),
   refundProcessed: (orderNumber: string) => ({
@@ -60,6 +60,6 @@ export const emailTemplates = {
   }),
   abandonedCart: (name: string) => ({
     subject: "You left something in your bag",
-    html: `<p>Hi ${name}, your BERRIVA ritual is still waiting for you. Come back and complete your order.</p>`,
+    html: `<p>Hi ${name}, your HERBOVA ritual is still waiting for you. Come back and complete your order.</p>`,
   }),
 };

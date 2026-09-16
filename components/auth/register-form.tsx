@@ -46,7 +46,7 @@ export function RegisterForm() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#f5efe9] px-4 py-12">
       <div className="w-full max-w-md rounded-[2rem] border border-[#e7d9c9] bg-white p-8 shadow-sm">
-        <p className="eyebrow">Join BERRIVA</p>
+        <p className="eyebrow">Join HERBOVA</p>
         <h1 className="mt-3 text-4xl tracking-[-0.04em] text-[#1b120d]">Create account</h1>
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <input

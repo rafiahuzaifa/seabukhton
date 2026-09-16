@@ -83,7 +83,7 @@ const defaultStory: StoryContent = {
   eyebrow: "Our story",
   headline: "Rooted in the Himalayas",
   paragraphs: [
-    "BERRIVA brings together the richness of sea buckthorn and the calm discipline of modern botanical skincare.",
+    "HERBOVA brings together the richness of sea buckthorn and the calm discipline of modern botanical skincare.",
     "We work with nature-inspired formulations that respect the power of the berry while creating elevated routines for skin, body, and daily wellness.",
   ],
   image: "https://images.unsplash.com/photo-1471193945509-9ad0617afabf?auto=format&fit=crop&w=1200&q=80",

@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   return {
     title: category.name,
-    description: category.description ?? `Shop ${category.name} from BERRIVA.`,
+    description: category.description ?? `Shop ${category.name} from HERBOVA.`,
     alternates: { canonical: `/categories/${category.slug}` },
   };
 }

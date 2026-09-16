@@ -73,7 +73,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="min-h-screen bg-[#f4efe7] lg:flex">
       <aside className="border-b border-[#e6d8c8] bg-[#1b120d] px-5 py-6 text-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-64 lg:flex-col lg:border-b-0 lg:border-r">
         <Link href="/" className="text-xl font-semibold tracking-[0.2em]">
-          BERRIVA
+          HERBOVA
         </Link>
         <p className="mt-1 text-[10px] uppercase tracking-[0.16em] text-[#c9a56b]">Admin console</p>
 

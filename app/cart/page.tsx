@@ -19,7 +19,7 @@ export default async function CartPage() {
     cookies(),
   ]);
 
-  const appliedCode = cookieStore.get("berriva_coupon")?.value ?? null;
+  const appliedCode = cookieStore.get("herbova_coupon")?.value ?? null;
   const couponResult = appliedCode ? await validateCoupon(appliedCode, subtotal) : null;
   const discount = couponResult?.valid ? couponResult.discount : 0;
 

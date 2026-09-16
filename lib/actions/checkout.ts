@@ -30,7 +30,7 @@ const checkoutSchema = z.object({
 export type CheckoutInput = z.infer<typeof checkoutSchema>;
 
 function generateOrderNumber() {
-  return `BRV-${Date.now().toString(36).toUpperCase()}`;
+  return `HRB-${Date.now().toString(36).toUpperCase()}`;
 }
 
 export async function placeOrderAction(input: CheckoutInput) {
@@ -63,7 +63,7 @@ export async function placeOrderAction(input: CheckoutInput) {
   }
 
   const cookieStore = await cookies();
-  const appliedCode = cookieStore.get("berriva_coupon")?.value ?? null;
+  const appliedCode = cookieStore.get("herbova_coupon")?.value ?? null;
   const couponResult = appliedCode ? await validateCoupon(appliedCode, subtotal, session?.user?.id) : null;
   const discount = couponResult?.valid ? couponResult.discount : 0;
 
@@ -144,7 +144,7 @@ export async function placeOrderAction(input: CheckoutInput) {
   }
 
   await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
-  cookieStore.set("berriva_coupon", "", { maxAge: 0, path: "/" });
+  cookieStore.set("herbova_coupon", "", { maxAge: 0, path: "/" });
 
   if (session?.user?.id) {
     await prisma.notification.create({

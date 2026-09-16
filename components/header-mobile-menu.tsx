@@ -38,7 +38,7 @@ export function HeaderMobileMenu({ items }: { items: NavItem[] }) {
               className="fixed inset-y-0 right-0 z-[110] w-[85%] max-w-sm bg-[#f6f1ea] p-6 shadow-2xl lg:hidden"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xl font-semibold tracking-[0.2em] text-[#1b120d]">BERRIVA</span>
+                <span className="text-xl font-semibold tracking-[0.2em] text-[#1b120d]">HERBOVA</span>
                 <button aria-label="Close menu" onClick={() => setOpen(false)}>
                   <X size={22} />
                 </button>

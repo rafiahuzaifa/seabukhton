@@ -16,7 +16,7 @@ export function NewsletterForm() {
     startTransition(async () => {
       const result = await subscribeNewsletterAction(email);
       if (result.success) {
-        push("You're on the list — welcome to BERRIVA.", "success");
+        push("You're on the list — welcome to HERBOVA.", "success");
         setEmail("");
       } else {
         push(result.error ?? "Something went wrong.", "error");

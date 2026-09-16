@@ -34,7 +34,7 @@ export default async function JournalArticlePage({ params }: { params: Promise<{
     headline: post.title,
     description: post.excerpt,
     image: post.featureImage ? [post.featureImage] : undefined,
-    author: { "@type": "Organization", name: post.authorName ?? "BERRIVA" },
+    author: { "@type": "Organization", name: post.authorName ?? "HERBOVA" },
     datePublished: post.createdAt.toISOString(),
   };
 
