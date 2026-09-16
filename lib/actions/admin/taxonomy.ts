@@ -75,6 +75,20 @@ export async function deleteCategoryAction(id: string) {
   return { success: true };
 }
 
+export async function toggleCategoryActiveAction(id: string) {
+  const session = await requireStaff();
+  if (!session) return { success: false, error: "Not authorized." };
+
+  const category = await prisma.category.findUnique({ where: { id } });
+  if (!category) return { success: false, error: "Category not found." };
+
+  await prisma.category.update({ where: { id }, data: { isActive: !category.isActive } });
+  revalidatePath("/admin/categories");
+  revalidatePath("/", "layout");
+  revalidatePath("/shop");
+  return { success: true };
+}
+
 // --------------------------------------------------------------- Collections
 const collectionSchema = z.object({
   name: z.string().min(2),

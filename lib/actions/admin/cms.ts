@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { requireStaff } from "@/lib/admin-guard";
 import { prisma } from "@/lib/prisma";
-import type { HeroContent, NavItem, StoryContent } from "@/lib/data/cms";
+import type { HeroContent, HomepageExtras, NavItem, StoryContent } from "@/lib/data/cms";
 
 const heroSchema = z.object({
   eyebrow: z.string().min(1),
@@ -141,6 +141,47 @@ export async function updateStoryAction(input: StoryContent) {
   });
 
   revalidatePath("/story");
+  revalidatePath("/admin/cms");
+  return { success: true };
+}
+
+// ------------------------------------------------------------- Homepage extras
+const extrasSchema = z.object({
+  trustPillars: z.array(z.string().min(1)).min(1),
+  goldenBerry: z.object({
+    eyebrow: z.string().min(1),
+    headline: z.string().min(1),
+    paragraphs: z.array(z.string().min(1)).min(1),
+    image: z.string().url(),
+    ctaLabel: z.string().min(1),
+    ctaHref: z.string().min(1),
+  }),
+  skincareRoutine: z.object({
+    eyebrow: z.string().min(1),
+    headline: z.string().min(1),
+    steps: z.array(z.object({ step: z.string().min(1), product: z.string().min(1) })).min(1),
+  }),
+  journey: z.object({
+    eyebrow: z.string().min(1),
+    headline: z.string().min(1),
+    steps: z.array(z.string().min(1)).min(1),
+  }),
+});
+
+export async function updateHomepageExtrasAction(input: HomepageExtras) {
+  const session = await requireStaff();
+  if (!session) return { success: false, error: "Not authorized." };
+
+  const parsed = extrasSchema.safeParse(input);
+  if (!parsed.success) return { success: false, error: "Please complete every field." };
+
+  await prisma.homepageSection.upsert({
+    where: { name: "extras" },
+    update: { content: parsed.data, isActive: true },
+    create: { name: "extras", type: "homepage_extras", content: parsed.data, isActive: true },
+  });
+
+  revalidatePath("/");
   revalidatePath("/admin/cms");
   return { success: true };
 }

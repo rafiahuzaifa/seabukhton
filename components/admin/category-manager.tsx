@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Plus, Trash2, Pencil } from "lucide-react";
 import type { Category } from "@prisma/client";
 
-import { createCategoryAction, deleteCategoryAction, updateCategoryAction } from "@/lib/actions/admin/taxonomy";
+import { createCategoryAction, deleteCategoryAction, toggleCategoryActiveAction, updateCategoryAction } from "@/lib/actions/admin/taxonomy";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/toast";
 
@@ -46,13 +46,30 @@ export function CategoryManager({ categories }: { categories: Category[] }) {
     <div className="space-y-5">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {categories.map((category) => (
-          <div key={category.id} className="rounded-[1.5rem] border border-[#eadac2] bg-white p-5">
+          <div key={category.id} className={`rounded-[1.5rem] border border-[#eadac2] p-5 ${category.isActive ? "bg-white" : "bg-[#f1ecec] opacity-75"}`}>
             <div className="flex items-start justify-between gap-2">
               <div>
                 <p className="font-medium text-[#1b120d]">{category.name}</p>
                 <p className="text-xs text-[#8a7469]">/{category.slug}</p>
               </div>
               <div className="flex gap-2">
+                <button
+                  disabled={pending}
+                  onClick={() =>
+                    startTransition(async () => {
+                      const result = await toggleCategoryActiveAction(category.id);
+                      if (result.success) {
+                        push(category.isActive ? "Category turned off" : "Category turned on", "success");
+                        router.refresh();
+                      } else {
+                        push(result.error ?? "Something went wrong.", "error");
+                      }
+                    })
+                  }
+                  className={`rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.1em] ${category.isActive ? "bg-[#eaf3e6] text-[#3e5c37]" : "bg-[#f1ecec] text-[#6a5a55]"}`}
+                >
+                  {category.isActive ? "On" : "Off"}
+                </button>
                 <button onClick={() => startEdit(category)} className="rounded-full border border-[#dcc7ad] p-1.5 text-[#4f3e36]">
                   <Pencil size={13} />
                 </button>
@@ -76,6 +93,7 @@ export function CategoryManager({ categories }: { categories: Category[] }) {
               </div>
             </div>
             {category.description ? <p className="mt-2 text-sm text-[#5d4d45]">{category.description}</p> : null}
+            {!category.isActive ? <p className="mt-2 text-[10px] uppercase tracking-[0.1em] text-[#a4372e]">Hidden from storefront</p> : null}
           </div>
         ))}
       </div>

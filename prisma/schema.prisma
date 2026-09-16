@@ -136,6 +136,7 @@ model Category {
   slug        String    @unique
   description String?
   image       String?
+  isActive    Boolean   @default(true)
   parentId    String?
   parent      Category? @relation("CategoryToSubCategory", fields: [parentId], references: [id])
   children    Category[] @relation("CategoryToSubCategory")

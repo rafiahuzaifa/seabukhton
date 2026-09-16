@@ -9,25 +9,14 @@ import { AddToCartButton } from "@/components/product/add-to-cart-button";
 import { RitualBuilder } from "@/components/home/ritual-builder";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { getFeaturedProducts } from "@/lib/data/products";
-import { getCategories, getHeroSection } from "@/lib/data/cms";
+import { getCategories, getHeroSection, getHomepageExtras } from "@/lib/data/cms";
 import { getFeaturedReviews } from "@/lib/data/reviews";
 import { getPublishedPosts } from "@/lib/data/blog";
 import { getSiteSettings, formatPrice } from "@/lib/data/settings";
 import { prisma } from "@/lib/prisma";
 
-const trustPillars = ["Premium Ingredients", "Naturally Inspired", "Carefully Crafted", "Secure Checkout", "Nationwide Delivery"];
-
-const skincareSteps = [
-  { step: "Cleanse", product: "Sea Buckthorn Face Wash" },
-  { step: "Treat", product: "Radiance Serum" },
-  { step: "Hydrate", product: "Hydrating Serum" },
-  { step: "Nourish", product: "Pure Berry Oil" },
-];
-
-const journeySteps = ["Harvest", "Selection", "Processing", "Formulation", "Packaging", "Delivery"];
-
 export default async function HomePage() {
-  const [hero, categories, featured, bundles, reviews, posts, ingredients, settings] = await Promise.all([
+  const [hero, categories, featured, bundles, reviews, posts, ingredients, settings, extras] = await Promise.all([
     getHeroSection(),
     getCategories(),
     getFeaturedProducts(5),
@@ -41,7 +30,9 @@ export default async function HomePage() {
     getPublishedPosts(3),
     prisma.ingredient.findMany({ orderBy: { name: "asc" } }),
     getSiteSettings(),
+    getHomepageExtras(),
   ]);
+  const { trustPillars, goldenBerry, skincareRoutine, journey } = extras;
 
   const heroProduct = hero.featuredProductSlug
     ? await prisma.product.findUnique({ where: { slug: hero.featuredProductSlug }, include: { images: true } })
@@ -184,7 +175,7 @@ export default async function HomePage() {
           <div className="container grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <div className="relative overflow-hidden rounded-[2rem] border border-[#eadac2] bg-[#f5efe7]">
               <Image
-                src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1200&q=80"
+                src={goldenBerry.image}
                 alt="Sea buckthorn berry close-up"
                 width={1200}
                 height={1200}
@@ -192,19 +183,16 @@ export default async function HomePage() {
               />
             </div>
             <div>
-              <p className="eyebrow">The Golden Berry</p>
-              <h2 className="mt-3 text-4xl tracking-[-0.04em] text-[#1b120d]">Meet the Golden Berry</h2>
-              <p className="mt-5 text-lg text-[#54453f]">
-                Sea buckthorn is a resilient berry native to the high mountain regions of the Himalayas. Known for its luminous color and
-                naturally rich botanical profile, it has been valued for generations in traditional wellness rituals.
-              </p>
-              <p className="mt-4 text-base text-[#5f4d46]">
-                This small but powerful fruit brings together a distinctive combination of botanical oils, carotenoids, and plant compounds
-                that help create premium formulations for modern skin and wellness routines.
-              </p>
+              <p className="eyebrow">{goldenBerry.eyebrow}</p>
+              <h2 className="mt-3 text-4xl tracking-[-0.04em] text-[#1b120d]">{goldenBerry.headline}</h2>
+              {goldenBerry.paragraphs.map((paragraph, i) => (
+                <p key={i} className={i === 0 ? "mt-5 text-lg text-[#54453f]" : "mt-4 text-base text-[#5f4d46]"}>
+                  {paragraph}
+                </p>
+              ))}
               <div className="mt-8 flex items-center gap-4">
                 <Button asChild className="rounded-full bg-[#1b120d] px-6 py-3.5 text-[11px] tracking-[0.12em] text-white hover:bg-[#2b1d17]">
-                  <Link href="/story">Discover Sea Buckthorn</Link>
+                  <Link href={goldenBerry.ctaHref}>{goldenBerry.ctaLabel}</Link>
                 </Button>
               </div>
             </div>
@@ -214,11 +202,11 @@ export default async function HomePage() {
         <section className="section-shell bg-[#f1e7dc]">
           <div className="container">
             <div className="mb-10 text-center">
-              <p className="eyebrow">Skincare experience</p>
-              <h2 className="mt-3 text-5xl tracking-[-0.05em] text-[#1b120d]">Glow, Naturally.</h2>
+              <p className="eyebrow">{skincareRoutine.eyebrow}</p>
+              <h2 className="mt-3 text-5xl tracking-[-0.05em] text-[#1b120d]">{skincareRoutine.headline}</h2>
             </div>
             <div className="grid gap-5 md:grid-cols-4">
-              {skincareSteps.map((item) => (
+              {skincareRoutine.steps.map((item) => (
                 <div key={item.step} className="rounded-[1.75rem] border border-[#e0c8a9] bg-white/70 p-6 shadow-sm">
                   <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-[#f0d8a1] text-lg font-medium text-[#1b120d]">
                     {item.step[0]}
@@ -268,11 +256,11 @@ export default async function HomePage() {
         <section className="section-shell">
           <div className="container">
             <div className="mb-10 text-center">
-              <p className="eyebrow">From berry to bottle</p>
-              <h2 className="mt-3 text-4xl tracking-[-0.04em] text-[#1b120d]">From the Mountains to Your Ritual</h2>
+              <p className="eyebrow">{journey.eyebrow}</p>
+              <h2 className="mt-3 text-4xl tracking-[-0.04em] text-[#1b120d]">{journey.headline}</h2>
             </div>
             <div className="grid gap-6 md:grid-cols-6">
-              {journeySteps.map((step, i) => (
+              {journey.steps.map((step, i) => (
                 <div key={step} className="rounded-[1.5rem] border border-[#e6d6bf] bg-white p-5 text-center shadow-sm">
                   <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#f0d8a1] text-sm font-medium text-[#1b120d] mx-auto">
                     0{i + 1}

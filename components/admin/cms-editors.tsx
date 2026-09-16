@@ -11,10 +11,11 @@ import {
   toggleBannerAction,
   updateAnnouncementAction,
   updateHeroAction,
+  updateHomepageExtrasAction,
   updateNavigationAction,
   updateStoryAction,
 } from "@/lib/actions/admin/cms";
-import type { HeroContent, NavItem, StoryContent } from "@/lib/data/cms";
+import type { HeroContent, HomepageExtras, NavItem, StoryContent } from "@/lib/data/cms";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/toast";
 
@@ -281,5 +282,177 @@ export function StoryEditor({ story }: { story: StoryContent }) {
         </Button>
       </div>
     </form>
+  );
+}
+
+export function HomepageExtrasEditor({ extras }: { extras: HomepageExtras }) {
+  const [pillarsText, setPillarsText] = useState(extras.trustPillars.join("\n"));
+  const [berry, setBerry] = useState({
+    eyebrow: extras.goldenBerry.eyebrow,
+    headline: extras.goldenBerry.headline,
+    paragraphsText: extras.goldenBerry.paragraphs.join("\n\n"),
+    image: extras.goldenBerry.image,
+    ctaLabel: extras.goldenBerry.ctaLabel,
+    ctaHref: extras.goldenBerry.ctaHref,
+  });
+  const [routine, setRoutine] = useState({
+    eyebrow: extras.skincareRoutine.eyebrow,
+    headline: extras.skincareRoutine.headline,
+    steps: extras.skincareRoutine.steps,
+  });
+  const [journey, setJourney] = useState({
+    eyebrow: extras.journey.eyebrow,
+    headline: extras.journey.headline,
+    steps: extras.journey.steps,
+  });
+  const [pending, startTransition] = useTransition();
+  const { push } = useToast();
+  const router = useRouter();
+
+  function handleSave() {
+    const payload: HomepageExtras = {
+      trustPillars: pillarsText.split("\n").map((s) => s.trim()).filter(Boolean),
+      goldenBerry: {
+        eyebrow: berry.eyebrow,
+        headline: berry.headline,
+        paragraphs: berry.paragraphsText.split("\n\n").map((p) => p.trim()).filter(Boolean),
+        image: berry.image,
+        ctaLabel: berry.ctaLabel,
+        ctaHref: berry.ctaHref,
+      },
+      skincareRoutine: routine,
+      journey,
+    };
+    startTransition(async () => {
+      const result = await updateHomepageExtrasAction(payload);
+      if (result.success) {
+        push("Homepage sections updated", "success");
+        router.refresh();
+      } else {
+        push(result.error ?? "Something went wrong.", "error");
+      }
+    });
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-[1.5rem] border border-[#eadac2] bg-white p-6">
+        <p className="text-sm font-medium text-[#1b120d]">Trust badges (one per line)</p>
+        <textarea rows={5} value={pillarsText} onChange={(e) => setPillarsText(e.target.value)} className={`mt-3 ${inputClass}`} />
+      </div>
+
+      <div className="rounded-[1.5rem] border border-[#eadac2] bg-white p-6">
+        <p className="text-sm font-medium text-[#1b120d]">"Meet the Golden Berry" section</p>
+        <div className="mt-3 grid gap-3 md:grid-cols-2">
+          <input value={berry.eyebrow} onChange={(e) => setBerry({ ...berry, eyebrow: e.target.value })} placeholder="Eyebrow" className={inputClass} />
+          <input value={berry.headline} onChange={(e) => setBerry({ ...berry, headline: e.target.value })} placeholder="Headline" className={inputClass} />
+          <input value={berry.ctaLabel} onChange={(e) => setBerry({ ...berry, ctaLabel: e.target.value })} placeholder="Button label" className={inputClass} />
+          <input value={berry.ctaHref} onChange={(e) => setBerry({ ...berry, ctaHref: e.target.value })} placeholder="Button link" className={inputClass} />
+          <input value={berry.image} onChange={(e) => setBerry({ ...berry, image: e.target.value })} placeholder="Image URL" className={`md:col-span-2 ${inputClass}`} />
+          <textarea
+            rows={4}
+            value={berry.paragraphsText}
+            onChange={(e) => setBerry({ ...berry, paragraphsText: e.target.value })}
+            placeholder="Paragraphs (blank line between each)"
+            className={`md:col-span-2 ${inputClass}`}
+          />
+        </div>
+      </div>
+
+      <div className="rounded-[1.5rem] border border-[#eadac2] bg-white p-6">
+        <p className="text-sm font-medium text-[#1b120d]">Skincare routine section</p>
+        <div className="mt-3 grid gap-3 md:grid-cols-2">
+          <input value={routine.eyebrow} onChange={(e) => setRoutine({ ...routine, eyebrow: e.target.value })} placeholder="Eyebrow" className={inputClass} />
+          <input value={routine.headline} onChange={(e) => setRoutine({ ...routine, headline: e.target.value })} placeholder="Headline" className={inputClass} />
+        </div>
+        <div className="mt-3 space-y-2">
+          {routine.steps.map((s, i) => (
+            <div key={i} className="grid gap-2 rounded-xl border border-[#eadac2] bg-[#faf6f1] p-2.5 md:grid-cols-[1fr_1fr_auto]">
+              <input
+                value={s.step}
+                onChange={(e) => setRoutine({ ...routine, steps: routine.steps.map((r, idx) => (idx === i ? { ...r, step: e.target.value } : r)) })}
+                placeholder="Step name"
+                className={inputClass}
+              />
+              <input
+                value={s.product}
+                onChange={(e) => setRoutine({ ...routine, steps: routine.steps.map((r, idx) => (idx === i ? { ...r, product: e.target.value } : r)) })}
+                placeholder="Product"
+                className={inputClass}
+              />
+              <button type="button" onClick={() => setRoutine({ ...routine, steps: routine.steps.filter((_, idx) => idx !== i) })} className="rounded-xl border border-[#eadac2] px-3 text-[#a4372e]">
+                <Trash2 size={14} />
+              </button>
+            </div>
+          ))}
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setRoutine({ ...routine, steps: [...routine.steps, { step: "", product: "" }] })}
+          className="mt-3 gap-2 rounded-full px-4 py-2.5 text-[10px] tracking-[0.1em]"
+        >
+          <Plus size={13} /> Add step
+        </Button>
+      </div>
+
+      <div className="rounded-[1.5rem] border border-[#eadac2] bg-white p-6">
+        <p className="text-sm font-medium text-[#1b120d]">"From berry to bottle" journey section</p>
+        <div className="mt-3 grid gap-3 md:grid-cols-2">
+          <input value={journey.eyebrow} onChange={(e) => setJourney({ ...journey, eyebrow: e.target.value })} placeholder="Eyebrow" className={inputClass} />
+          <input value={journey.headline} onChange={(e) => setJourney({ ...journey, headline: e.target.value })} placeholder="Headline" className={inputClass} />
+        </div>
+        <div className="mt-3 space-y-2">
+          {journey.steps.map((step, i) => (
+            <div key={i} className="flex items-center gap-2 rounded-xl border border-[#eadac2] bg-[#faf6f1] p-2.5">
+              <input
+                value={step}
+                onChange={(e) => setJourney({ ...journey, steps: journey.steps.map((s, idx) => (idx === i ? e.target.value : s)) })}
+                className={`flex-1 ${inputClass}`}
+              />
+              <button
+                type="button"
+                disabled={i === 0}
+                onClick={() => {
+                  const next = [...journey.steps];
+                  [next[i - 1], next[i]] = [next[i], next[i - 1]];
+                  setJourney({ ...journey, steps: next });
+                }}
+                className="rounded-full border border-[#dcc7ad] p-1.5 text-[#4f3e36] disabled:opacity-30"
+              >
+                <ArrowUp size={13} />
+              </button>
+              <button
+                type="button"
+                disabled={i === journey.steps.length - 1}
+                onClick={() => {
+                  const next = [...journey.steps];
+                  [next[i + 1], next[i]] = [next[i], next[i + 1]];
+                  setJourney({ ...journey, steps: next });
+                }}
+                className="rounded-full border border-[#dcc7ad] p-1.5 text-[#4f3e36] disabled:opacity-30"
+              >
+                <ArrowDown size={13} />
+              </button>
+              <button type="button" onClick={() => setJourney({ ...journey, steps: journey.steps.filter((_, idx) => idx !== i) })} className="rounded-full border border-[#dcc7ad] p-1.5 text-[#a4372e]">
+                <Trash2 size={13} />
+              </button>
+            </div>
+          ))}
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setJourney({ ...journey, steps: [...journey.steps, "New step"] })}
+          className="mt-3 gap-2 rounded-full px-4 py-2.5 text-[10px] tracking-[0.1em]"
+        >
+          <Plus size={13} /> Add step
+        </Button>
+      </div>
+
+      <Button type="button" disabled={pending} onClick={handleSave} className="rounded-full px-6 py-3 text-[11px] tracking-[0.12em]">
+        {pending ? "Saving…" : "Save homepage sections"}
+      </Button>
+    </div>
   );
 }
